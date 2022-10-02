@@ -1,0 +1,115 @@
+using System;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Diagnostics;
+using System.Text.Json;
+
+namespace Shmidt_A_A_Lab1
+{
+    class Program1
+    {
+        static void Main(string[] args)
+        {
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            Console.WriteLine("Задание номер 1");
+            foreach (DriveInfo drive in drives)
+            {
+                Console.WriteLine($"Название: {drive.Name}");
+                Console.WriteLine($"Тип: {drive.DriveType}");
+                if (drive.IsReady)
+                {
+                    Console.WriteLine($"Объем диска: {drive.TotalSize}");
+                    Console.WriteLine($"Свободное пространство: {drive.TotalFreeSpace}");
+                    Console.WriteLine($"Метка: {drive.VolumeLabel}");
+                }
+                Console.WriteLine();
+            }
+            string path = @"C:\SomeDir";
+            string Bubls = @"program\avalon";
+            DirectoryInfo dirInfo = new DirectoryInfo(path);
+            if (!dirInfo.Exists)
+            {
+                dirInfo.CreateSubdirectory(Bubls);
+            }
+            Console.WriteLine("Задание номер 2");
+            Console.WriteLine("Введите строку для записи в файл:");
+            string text = Console.ReadLine();
+
+            using (FileStream fstream = new FileStream(@"C:\SomeDir\note.txt", FileMode.OpenOrCreate))
+            {
+                byte[] array = System.Text.Encoding.Default.GetBytes(text);
+                fstream.Write(array, 0, array.Length);
+                Console.WriteLine("Текст был записан в файл");
+            }
+            using (FileStream fstream = File.OpenRead(@"C:\SomeDir\note.txt"))
+            {
+                byte[] array = new byte[fstream.Length];
+                fstream.Read(array, 0, array.Length);
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                Console.WriteLine($"Текст выведен из файла: {textFromFile}");
+            }
+            {
+                File.Delete(@"C:\SomeDir\note.txt");
+                Console.WriteLine("Файл был успешно удалён\n");
+            }
+
+            Console.WriteLine("Задание номер 4");
+            Console.WriteLine("Создан файл типа (.xml) значения файла таковы:");
+
+            XDocument xdoc = new XDocument();
+            // создаем первый элемент
+            XElement applew6 = new XElement("watch");
+            // создаем атрибут
+            XAttribute appleNameAttr = new XAttribute("name", "Apple Watch Series 6");
+            XElement appleCompanyElem = new XElement("company", "Apple");
+            XElement applePriceElem = new XElement("price", "25000");
+            // добавляем атрибут и элементы в первый элемент
+            applew6.Add(appleNameAttr);
+            applew6.Add(appleCompanyElem);
+            applew6.Add(applePriceElem);
+
+            // создаем второй элемент
+            XElement galaxyw4 = new XElement("watch");
+            XAttribute galaxysNameAttr = new XAttribute("name", "Samsung Galaxy Watch 4");
+            XElement galaxysCompanyElem = new XElement("company", "Samsung");
+            XElement galaxysPriceElem = new XElement("price", "17000");
+            galaxyw4.Add(galaxysNameAttr);
+            galaxyw4.Add(galaxysCompanyElem);
+            galaxyw4.Add(galaxysPriceElem);
+            // создаем корневой элемент
+            XElement watches = new XElement("watches");
+            // добавляем в корневой элемент
+            watches.Add(applew6);
+            watches.Add(galaxyw4);
+            // добавляем корневой элемент в документ
+            xdoc.Add(watches);
+            //сохраняем документ
+            xdoc.Save(fileName: "watches.xml");
+
+            foreach (XElement phoneElement in xdoc.Element("watches").Elements("watch"))
+            {
+                XAttribute nameAttribute = phoneElement.Attribute("name");
+                XElement companyElement = phoneElement.Element("company");
+                XElement priceElement = phoneElement.Element("price");
+
+                if (nameAttribute != null && companyElement != null && priceElement != null)
+                {
+                    Console.WriteLine($"Часы: {nameAttribute.Value}");
+                    Console.WriteLine($"Компания: {companyElement.Value}");
+                    Console.WriteLine($"Цена: {priceElement.Value}");
+                }
+                Console.WriteLine();
+            }
+
+            string path1 = @"C:\Users\ann42\OneDrive\Рабочий стол\лабы ОС\лаба 1\bin\Debug\net6.0\watches.xml";
+            FileInfo fileInf = new FileInfo(path1);
+            if (fileInf.Exists)
+            {
+                fileInf.Delete();
+
+            }
+            Console.WriteLine("Файл был успешно удалён");
+        }
+    }
+}
